@@ -1,4 +1,4 @@
-<aside class="md:w-1/6 h-[88dvh] bg-green-500 -translate-x-[90px] md:-translate-x-0" aria-label="Sidebar">
+<aside class="md:w-1/6 h-[88dvh] bg-emerald-400 -translate-x-[90px] md:-translate-x-0" aria-label="Sidebar">
     <div class="h-full px-3 py-4 overflow-y-auto dark:bg-gray-800">
         <ul class="h-full font-medium flex flex-col justify-between">
             <div class="space-y-2">
@@ -22,9 +22,9 @@
                 <li>
                     <a href="<?= $_ENV['APP_URL'] . "/dashboard" ?>" class="statistics flex flex-row-reverse md:flex-row justify-between gap-2 md:gap-0 md:justify-normal items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 group">
                         <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 18">
-                            <path d="M1 1V17C1 17.5304 1.21071 18.0391 1.58579 18.4142C1.96086 18.7893 2.46957 19 3 19H19" stroke="#ABB2BF" stroke-width="2" stroke-miterlimit="5.759" stroke-linecap="round" stroke-linejoin="round" />
-                            <path d="M5 12L9 8L13 12L19 6" stroke="#ABB2BF" stroke-width="2" stroke-miterlimit="5.759" stroke-linecap="round" stroke-linejoin="round" />
-                            <path d="M16 6H19V9" stroke="#ABB2BF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M1 1V17C1 17.5304 1.21071 18.0391 1.58579 18.4142C1.96086 18.7893 2.46957 19 3 19H19" stroke="#708090" stroke-width="2" stroke-miterlimit="5.759" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M5 12L9 8L13 12L19 6" stroke="#708090" stroke-width="2" stroke-miterlimit="5.759" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M16 6H19V9" stroke="#708090" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
 
                         <span class="flex-1 m-0 md:ms-3 whitespace-nowrap">Statistics</span>
