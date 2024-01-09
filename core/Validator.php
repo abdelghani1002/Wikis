@@ -66,6 +66,14 @@ class Validator
             $this->addError($field, 'Invalid name. It must contain only letters and spaces, and be between 2 and 50 characters long.');
         }
     }
+    
+    protected function validateUsername($field)
+    {
+        $name = $this->data[$field];
+        if (!preg_match("/^[a-zA-Z0-9 ]{2,50}$/", $name)) {
+            $this->addError($field, 'Invalid name. It must contain only letters, numbers and spaces, and be between 2 and 50 characters long.');
+        }
+    }
 
     protected function validateEmail($field)
     {
