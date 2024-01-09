@@ -2,6 +2,8 @@
 
 namespace app\Models;
 
+use database\Connection;
+
 class Model
 {
     private static $pdo = null;
@@ -133,11 +135,9 @@ class Model
     {
         if (!self::$pdo) {
             $config = require("./core/database.php");
-            self::$pdo = new \PDO(
-                'mysql:host=' . $config['mysql']['host'] . ';dbname=' . $config['mysql']['dbname'],
-                $config['mysql']['username'],
-                $config['mysql']['password']
-            );
+            $mysql = $config['mysql'];
+            $con = Connection::getInstance($mysql['dbname'], $mysql['host'], $mysql['username'], $mysql['password']);
+            self::$pdo = $con->getPDO();
         }
     }
 
