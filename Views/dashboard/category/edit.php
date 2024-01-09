@@ -22,13 +22,13 @@ session_start();
 <body class="h-screen">
 
     <?php
-    require "app/Views/includes/navbar.php";
+    require "Views/includes/navbar.php";
     ?>
 
     <div class="w-full flex flex-row">
 
         <?php
-        require "app/Views/includes/dashboard/aside.php";
+        require "Views/includes/dashboard/aside.php";
         ?>
 
         <div class="relative w-5/6 mx-auto bg-white rounded-md shadow-md">
@@ -47,12 +47,15 @@ session_start();
                 }
                 ?>
 
-                <form class="w-2/3 p-1" action="<?= $_ENV['APP_URL'] . "/dashboard/categories/store" ?>" method="post" enctype="multipart/form-data">
+                <form class="w-2/3 p-1" action="<?= $_ENV['APP_URL'] . "/dashboard/categories/update" ?>" method="post" enctype="multipart/form-data">
 
                     <!-- Catgeory Name -->
                     <div class="">
                         <label for="name" class="block text-gray-600 text-sm font-medium mb-2">Name</label>
-                        <input type="text" id="name" name="name" class="w-full px-3 py-2 border border-slate-400 rounded-md focus:outline-none focus:border-blue-500" required>
+                        <input type="text" id="name" name="name" 
+                            class="w-full px-3 py-2 border border-slate-400 rounded-md focus:outline-none focus:border-blue-500" 
+                            required
+                            value="<?= $category['name'] ?>">
                     </div>
                     <?php
                     if (isset($_SESSION['errors']["name"])) {
@@ -68,7 +71,8 @@ session_start();
                     <!-- Category slogan -->
                     <div class="mt-4">
                         <label for="slogan" class="block text-gray-600 text-sm font-medium mb-2">Slogan</label>
-                        <input type="text" id="slogan" name="slogan" class="w-full px-3 py-2 border border-slate-400 rounded-md focus:outline-none focus:border-blue-500">
+                        <input type="text" id="slogan" name="slogan" class="w-full px-3 py-2 border border-slate-400 rounded-md focus:outline-none focus:border-blue-500"
+                        value="<?= $category['slogan'] ?>">
                     </div>
                     <?php
                     if (isset($_SESSION['errors']["slogan"])) {
@@ -84,7 +88,7 @@ session_start();
                     <!-- Category photo -->
                     <div class="mt-4">
                         <label for="photo" class="block text-gray-600 text-sm font-medium mb-2">Photo</label>
-                        <input type="file" id="photo" name="photo" class="w-full px-3 py-2 border border-slate-400 rounded-md focus:outline-none focus:border-blue-500" required>
+                        <input type="file" id="photo" name="photo" class="w-full px-3 py-2 border border-slate-400 rounded-md focus:outline-none focus:border-blue-500">
                     </div>
                     <?php
                     if (isset($_SESSION['errors']["photo"])) {
@@ -97,10 +101,13 @@ session_start();
                     }
                     ?>
 
+                    <input type="hidden" name="id" value="<?= $category['id'] ?>">
+                    <input type="hidden" name="photo_src" value="<?= $category['photo_src'] ?>">
+
                     <!-- Submit Button -->
                     <div class="flex flex-row justify-center">
                         <button type="submit" class="bg-blue-500 text-white px-4 py-2 mt-4 rounded-md hover:bg-blue-600 focus:outline-none focus:shadow-outline-blue active:bg-blue-800">
-                            Create Category
+                            Update
                         </button>
                     </div>
                 </form>

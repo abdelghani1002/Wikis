@@ -18,13 +18,13 @@
 <body class="h-full">
 
     <?php
-    require "app/Views/includes/navbar.php";
+    require "Views/includes/navbar.php";
     ?>
 
     <div class="w-full flex flex-row h-full">
 
         <?php
-        require "app/Views/includes/dashboard/aside.php";
+        require "Views/includes/dashboard/aside.php";
         ?>
         <div class="md:w-5/6 max-h-[90dvh] -ml-[90px] md:-ml-0">
             <div class="p-2 rounded-lg dark:border-gray-700 flex flex-col grow justify-between h-full">

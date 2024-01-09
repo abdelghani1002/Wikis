@@ -22,13 +22,13 @@ session_start();
 <body class="h-full">
 
     <?php
-    require "app/Views/includes/navbar.php";
+    require "Views/includes/navbar.php";
     ?>
 
     <div class="w-full flex flex-row h-full">
 
         <?php
-        require "app/Views/includes/dashboard/aside.php";
+        require "Views/includes/dashboard/aside.php";
         ?>
         <div class="w-5/6">
             <div class="flex flex-row items-center py-1 w-full px-2">
