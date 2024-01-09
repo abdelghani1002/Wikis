@@ -66,7 +66,7 @@ class Validator
             $this->addError($field, 'Invalid name. It must contain only letters and spaces, and be between 2 and 50 characters long.');
         }
     }
-    
+
     protected function validateUsername($field)
     {
         $name = $this->data[$field];
@@ -88,6 +88,17 @@ class Validator
             $this->addError($field, 'The ' . $field . ' must be at least 8 characters long.');
         }
     }
+
+    protected function validateText($field)
+    {
+        $text = $this->data[$field];
+        $textLength = strlen($text);
+
+        if ($textLength < 200 || $textLength > 2000) {
+            $this->addError($field, 'The ' . $field . ' must be between 200 and 2000 characters long.');
+        }
+    }
+
 
     protected function validatePrice($field)
     {
