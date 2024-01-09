@@ -6,7 +6,7 @@ class Model
 {
     private static $pdo = null;
 
-    protected static function selectRecords(string $table, string $columns = "*", string $where = null)
+    protected static function selectRecords(string $table, string $columns = "*", string $where = null, $order_by = null)
     {
         self::connect();
         try {
@@ -14,6 +14,10 @@ class Model
 
             if ($where !== null) {
                 $sql .= " WHERE $where";
+            }
+
+            if ($order_by !== null) {
+                $sql .= " ORDER BY $order_by";
             }
 
             // Prepare the SQL query
