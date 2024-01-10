@@ -50,7 +50,7 @@ class Model
 
         try {
             $sql = "INSERT INTO $table ($columns) VALUES ($placeholders)";
-
+            
             $stmt = self::$pdo->prepare($sql);
 
 
@@ -61,8 +61,9 @@ class Model
                 $i++;
             }
             $stmt->execute();
+            $lastInsertId = self::$pdo->lastInsertId();
             self::deconnect();
-            return true;
+            return $lastInsertId;
         } catch (\PDOException $e) {
             self::deconnect();
             return false;
