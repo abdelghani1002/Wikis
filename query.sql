@@ -47,7 +47,7 @@ create table wikis(
 );
 
 create table wiki_tags(
-    `id` int not null,
+    `id` int AUTO_INCREMENT PRIMARY key,
     `wiki_id` int,
     `tag_id` int,
     Foreign Key (`wiki_id`) REFERENCES wikis(`id`),
