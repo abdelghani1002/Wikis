@@ -11,6 +11,7 @@ create table users(
     `email` VARCHAR(255) not null UNIQUE,
     `password` VARCHAR(255) not null,
     `role` ENUM('admin', 'author') DEFAULT 'author',
+    `photo_src` VARCHAR(255) DEFAULT "/public/images/users/default.webp",
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
