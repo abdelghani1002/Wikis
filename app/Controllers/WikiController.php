@@ -6,6 +6,7 @@ namespace app\Controllers;
 use app\Models\Wiki;
 use app\Controllers\Controller;
 use app\Models\Category;
+use app\Models\Model;
 use app\Models\Tag;
 use core\Validator;
 
@@ -26,17 +27,20 @@ class WikiController extends Controller
 
     public function store()
     {
-        if (isset($_POST) && isset($_FILES)) {
-            $tags = $_POST['tags'];
+        if (isset($_POST)) {
             $title = $_POST['title'];
             $content = $_POST['content'];
             $author_id = 1; // Auth:user()['id'];
             $category_id = $_POST['category_id'];
-            $photo = $_FILES['photo'];
-            // echo "<pre>";
-            // var_dump($_POST['category_id']);
-            // echo "</pre>";exit;
-            // Validation
+            $tags = [];
+            if (isset($_POST['tags'])) {
+                $tags = $_POST['tags'];
+            }
+
+            if ($_FILES['photo']['tmp_name'] !== "") {
+                $photo = $_FILES['photo'];
+            }
+
             $data = [
                 'title' => $title,
                 'content' => $content,
@@ -47,7 +51,7 @@ class WikiController extends Controller
                 'content' => 'required|text',
             ];
 
-            if (isset($photo) && $photo['error'] !== 0) {
+            if (isset($photo) && $photo['error'] !== null) {
                 $data['photo'] = $photo;
             }
 
@@ -63,7 +67,7 @@ class WikiController extends Controller
             }
             // store photo
             $isPhotoSaved = false;
-            if (isset($photo) && $photo['error'] == null) {
+            if (!empty($photo) && $photo['error'] !== null) {
                 $photoName = $photo['name'];
                 $photoTmpName = $photo['tmp_name'];
                 $photoType = strtolower(pathinfo($photoName, PATHINFO_EXTENSION));
@@ -75,14 +79,15 @@ class WikiController extends Controller
                 $photoDestination = $photoUploadFolder . $newPhotoName;
                 $isPhotoSaved = move_uploaded_file($photoTmpName,  $photoDestination);
             }
-            
-            $isPhotoSaved ? $photoDestination = "/" . $photoDestination : $photoDestination = "";
+            $photoDestination = "";
+            if ($isPhotoSaved)
+                $photoDestination = "/" . $photoDestination;
 
             $wiki = new Wiki($title, $content, $photoDestination, (int)$author_id, (int)$category_id);
-            
+
             if ($wiki->save($tags)) {
                 session_start();
-                $_SESSION['success']  = "Wiki posted successfully.";
+                $_SESSION['success_create']  = "Wiki posted successfully.";
                 header('location:' . $_SERVER['HTTP_REFERER']);
                 return;
             }
@@ -98,43 +103,59 @@ class WikiController extends Controller
     {
         if (isset($_POST['id'])) {
             $id = $_POST['id'];
-            $wiki = Wiki::select("id = $id");
-            $this->render("dashboard/wiki/edit", ['wiki' => $wiki]);
+            $wiki = Wiki::select("w.id = $id");
+            $tags = Tag::select();
+            $categories = Category::select();
+            $wiki_tags_ids = Model::selectRecords("wiki_tags", "tag_id", "wiki_id = $id");
+
+            // Remove assosiative array
+            if (count($wiki_tags_ids) === 1) {
+                // Handle the single-element case differently, if needed
+                $wiki_tags_ids = [$wiki_tags_ids['tag_id']];
+            } else {
+                $wiki_tags_ids = array_column($wiki_tags_ids, 'tag_id');
+            }
+            // echo "<pre>";
+            // var_dump($wiki_tags_ids);
+            // echo "</pre>";exit;
+
+            $this->render("dashboard/wiki/edit", [
+                'wiki' => $wiki,
+                'tags' => $tags,
+                'categories' => $categories,
+                'wiki_tags_ids' => $wiki_tags_ids,
+            ]);
         }
     }
 
     public function update()
     {
-        if (isset($_POST)) {
+        if (isset($_POST) && isset($_FILES)) {
             $id = $_POST['id'];
-            $photo_src = $_POST['photo_src'];
-            $name = $_POST['name'];
-            $slogan = $_POST['slogan'];
-            $photo = $_FILES['photo'];
+            $tags = [];
+            if (isset($_POST['tags'])) {
+                $tags = $_POST['tags'];
+            }
+            $title = $_POST['title'];
+            $content = $_POST['content'];
+            $category_id = $_POST['category_id'];
 
-            // Validation
             $data = [
-                'name' => $name,
+                'title' => $title,
+                'content' => $content,
             ];
 
             $rules = [
-                'name' => 'required|name',
+                'title' => 'required|username',
+                'content' => 'required|text',
             ];
 
-            if ($slogan !== "") {
-                $data['slogan'] = $slogan;
-                $rules['slogan'] = 'required|name';
+            if ($_FILES['photo']['tmp_name'] !== "") {
+                $photo = $_FILES['photo'];
+                $data['photo'] = $photo;
+                $rules['photo'] = "file";
             }
-
-            if ($slogan !== "") {
-                $data['slogan'] = $slogan;
-                $rules['slogan'] = 'required|name';
-            }
-
-            if (isset($_FILES['image']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE) {
-                $data['photo'] = $_FILES['photo'];
-                $rules['photo'] = 'required|file';
-            }
+            
 
             $validator = new Validator($data);
             $validator->validate($rules);
@@ -146,44 +167,64 @@ class WikiController extends Controller
                 header('location:' . $_SERVER['HTTP_REFERER']);
                 return;
             }
+            // update photo if it's posted
+            $photoDestination = "";
+            if (isset($photo) && $photo['error'] == null) {
+                if ($_POST['photo_src'] !== "" && file_exists(ltrim($_POST['photo_src'], "/"))) {
+                    unlink(ltrim($_POST['photo_src'], "/"));
+                }
 
-            $newData = [
-                'name' => $name,
-                'slogan' => $slogan
-            ];
-
-            if (isset($photo)) {
-                unlink('.' . $photo_src);
                 $photoName = $photo['name'];
                 $photoTmpName = $photo['tmp_name'];
                 $photoType = strtolower(pathinfo($photoName, PATHINFO_EXTENSION));
 
-                $newPhotoName = uniqid("wiki_") . '.' . $photoType;
+                $newPhotoName = uniqid("wiki_") . '.'  . $photoType;
 
                 $photoUploadFolder = "public/images/wikis/";
 
                 $photoDestination = $photoUploadFolder . $newPhotoName;
                 move_uploaded_file($photoTmpName,  $photoDestination);
-                $newData['photo_src'] = "/" . $photoDestination;
+                $photoDestination = "/" . $photoDestination;
             }
 
-            if (Wiki::update($newData, $id)) {
+            unset($data['photo']);
+            $data["photo_src"] = $photoDestination;
+            $data["category_id"] = $category_id;
+
+            if (Wiki::update($data, $tags, $id)) {
                 session_start();
-                $_SESSION['success_update']  = "Category updated successfully.";
-                header('location:' . $_ENV["APP_URL"] . "/dashboard/wikis");
+                $_SESSION['success']  = "Wiki updated successfully.";
+                // if (Auth::user()['role'] == admin) {
+                header('location: ' . $_ENV['APP_URL'] . '/dashboard/wikis');
+                // exit;
+                // }
+                // header('location: ' . $_ENV['APP_URL'] . '/wikis');                
                 return;
             }
             session_start();
-            $_SESSION['errors'] = "Error withing updating the category !!";
-            header('location:' . $_ENV["APP_URL"] . "/dashboard/wikis");
+            $_SESSION['errors'] = [0 => "Error withing updating the wiki !!"];
+            // if (Auth::user()['role'] == admin) {
+            header('location: ' . $_SERVER['HTTP_REFERER']);
+            // exit;
+            // }
+            // header('location: ' . $_ENV['APP_URL'] . '/wikis');
             return;
         }
     }
 
     public function delete()
     {
+        if (file_exists(ltrim($_POST['photo_src'], "/")))
+            unlink(ltrim($_POST['photo_src'], "/"));
         if (isset($_POST['id']) && Wiki::delete($_POST['id'])) {
+            session_start();
+            $_SESSION['success']  = "Wiki Removed successfully.";
+            // if (Auth::user()['role'] == admin) {
             header("Location:" . $_SERVER['HTTP_REFERER']);
+            // exit;
+            // }
+            // header('location: ' . $_ENV['APP_URL'] . '/wikis');                
+            return;
         }
     }
 }

@@ -25,15 +25,15 @@ class Wiki extends Model
     {
         $data = get_object_vars($this);
         $id = parent::insertRecord('wikis', $data);
-        if ($this->saveTags($tags, $id))
+        if (self::saveTags($tags, $id))
             return true;
         return false;
     }
 
-    public function saveTags($tags_ids, $id)
+    public static function saveTags($tags_ids, $id)
     {
-        try{
-            foreach($tags_ids as $tag_id){
+        try {
+            foreach ($tags_ids as $tag_id) {
                 $data = [
                     "wiki_id" => (int)$id,
                     "tag_id" => (int)$tag_id,
@@ -41,34 +41,48 @@ class Wiki extends Model
                 parent::insertRecord("wiki_tags", $data);
             }
             return true;
-        }catch(PDOException $e){
+        } catch (PDOException $e) {
             echo $e->getMessage();
-            return false; 
+            return false;
         }
     }
 
     public static function select($where = null)
     {
-        $wikis = parent::selectRecords('wikis', '*', $where, "`created_at` desc");
-        foreach ($wikis as &$wiki) {
-            $author = parent::selectRecords("users", '*', "id = " . $wiki['author_id']);
-            $category = Category::select("id = " . $wiki['category_id']);
-            $wiki['author'] = $author;
-            $wiki['category'] = $category;
+        $q =    "select w.id, w.title, w.content, w.photo_src as wiki_photo_src,
+                    w.status, w.created_at as wiki_created_at, u.name as author_name,
+                    u.photo_src as author_photo_src, c.name as category_name, c.photo_src as category_photo_src
+                from wikis w
+                left join users u
+                    on w.`author_id` = u.`id`
+                left JOIN categories c
+                    on w.`category_id` = c.`id`
+        ";
+        if ($where !== null) {
+            $q .= " WHERE $where";
         }
+        $q .= " order by w.created_at desc";
+
+        $wikis = parent::query($q);
         return $wikis;
     }
 
-    public static function update($data, $id)
+    public static function update($data, $tags, $id)
     {
-        return parent::updateRecord('wikis', $data, $id);
+        $res1 = parent::deleteRecord("wiki_tags", "wiki_id = $id");
+        $res2 = self::saveTags($tags, $id);
+        $res3 = parent::updateRecord('wikis', $data, $id);
+        if ($res1 && $res2 && $res3) {
+            return true;
+        }
+        return false;
     }
 
     public static function delete($id)
     {
-        $category = parent::selectRecords('wikis', '*', "id = $id");
-        // remove photo
-        unlink("." . $category['photo_src']);
-        return parent::deleteRecord('wikis', $id);
+        return
+            parent::deleteRecord("wiki_tags", "wiki_id = $id")
+            &&
+            parent::deleteRecord('wikis', "id = $id");
     }
 }

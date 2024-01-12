@@ -8,8 +8,7 @@ session_start();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href=<?= $_ENV['APP_URL'] . "/public/assets/dist/output.css" ?>>
-    <link rel="shortcut icon" href="<?= $_ENV['APP_URL'] . "/public/images/favicon.ico" ?>" type="image/x-icon">
-    
+
     <!-- select2 -->
     <!-- Styles -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
@@ -22,9 +21,15 @@ session_start();
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
 
-    <title>Wiki</title>
-    <!-- Tiny CDN -->
+    <title>Dashboard</title>
+    <!-- Tiny -->
     <script src="https://cdn.tiny.cloud/1/qwokz1nmmty2escna2o9lclbv8en7rr1g4j0a0kz0h74kjso/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+
+    <style>
+        .wikis {
+            background-color: rgb(229 231 235 / var(--tw-bg-opacity));
+        }
+    </style>
 </head>
 
 <body class="h-screen">
@@ -39,32 +44,15 @@ session_start();
         require "Views/includes/dashboard/aside.php";
         ?>
 
-        <div class="relative w-5/6 mx-auto bg-white rounded-md shadow-md">
+        <div class="relative w-full mx-auto bg-white rounded-md shadow-md">
             <div class="absolute top-2 left-0">
-                <a href="<?= $_ENV['APP_URL'] . "/dashboard/wikis" ?>" class="bg-gray-300 cursor-pointer rounded-md m-2 p-1 text-md text-gray-600">
+                <a href="<?= $_SERVER['HTTP_REFERER'] ?>" class="bg-gray-300 cursor-pointer rounded-md m-2 p-1 text-md text-gray-600">
                     < Back </a>
             </div>
             <div class="w-full flex flex-col items-center overflow-y-scroll h-[88dvh]">
-                <h1 class="text-2xl font-semibold mb-6">Post a Wiki</h1>
-                <?php
-                if (isset($_SESSION['success_create'])) {
-                ?>
-                    <p class="text-green-600 p-1"><?= $_SESSION['success_create'] ?></p>
-                    <?php
-                    unset($_SESSION['success_create']);
-                }
-                if (isset($_SESSION['errors'])) {
-                    foreach ($_SESSION['errors'] as $error) {
-                    ?>
-                        <p class="text-red-600 text-sm m-0"><?= $error ?></p>
-                <?php
-                    }
-                    unset($_SESSION['errors']);
-                }
-                ?>
+                <h1 class="text-2xl font-semibold mb-6">Add a Wiki</h1>
 
-                <form class="w-2/3 p-1" action="<?= $_ENV['APP_URL'] . "/wikis/store" ?>" method="post" enctype="multipart/form-data">
-
+                <form class="w-2/3 p-1" action="<?= $_ENV['APP_URL'] . "/wikis/update" ?>" method="post" enctype="multipart/form-data">
                     <!-- Wiki Category -->
                     <div class="">
                         <label for="title" class="block text-gray-600 text-sm font-medium mb-2">Category</label>
@@ -74,7 +62,7 @@ session_start();
                             <?php
                             foreach ($categories as $category) {
                             ?>
-                                <option value="<?= $category['id'] ?>" <?php if ($category['name'] === "general") echo "selected"; ?>>
+                                <option value="<?= $category['id'] ?>" <?php if ($category['name'] === $wiki['category_name']) echo "selected"; ?>>
                                     <?= $category['name'] ?>
                                 </option>
                             <?php
@@ -85,11 +73,10 @@ session_start();
                     </div>
 
                     <!-- Wiki Title -->
-                    <div class="mt-4">
+                    <div class="">
                         <label for="title" class="block text-gray-600 text-sm font-medium mb-2">Title</label>
-                        <input type="text" id="title" name="title" class="w-full px-3 py-2 border border-slate-400 rounded-md focus:outline-none focus:border-blue-500" required>
+                        <input value="<?= $wiki['title'] ?>" type="text" id="title" name="title" class="w-full px-3 py-2 border border-slate-400 rounded-md focus:outline-none focus:border-blue-500" required>
                     </div>
-
                     <?php
                     if (isset($_SESSION['errors']['title'])) {
                         foreach ($_SESSION['errors']['title'] as $error) {
@@ -112,7 +99,7 @@ session_start();
                     <!-- Wiki Content -->
                     <div class="mt-4">
                         <label for="content" class="block text-gray-600 text-sm font-medium mb-2">Content</label>
-                        <textarea id="content" name="content" placeholder="Write .."></textarea>
+                        <textarea id="content" name="content" placeholder="Write .."><?= $wiki['content'] ?></textarea>
                     </div>
                     <?php
                     if (isset($_SESSION['errors']["content"])) {
@@ -130,7 +117,9 @@ session_start();
                             <?php
                             foreach ($tags as $tag) {
                             ?>
-                                <option value="<?= $tag['id'] ?>"><?= $tag['name'] ?></option>
+                                <option value="<?= $tag['id'] ?>" <?php if (in_array($tag['id'], $wiki_tags_ids)) echo "selected"; ?>>
+                                    <?= $tag['name'] ?>
+                                </option>
                             <?php
                             }
                             ?>
@@ -142,7 +131,6 @@ session_start();
                         <label for="photo" class="block text-gray-600 text-sm font-medium mb-2">Photo</label>
                         <input type="file" id="photo" name="photo" class="w-full px-3 py-2 border border-slate-400 rounded-md focus:outline-none focus:border-blue-500">
                     </div>
-
                     <?php
                     if (isset($_SESSION['errors']["photo"])) {
                         foreach ($_SESSION['errors']["photo"] as $error) {
@@ -154,10 +142,12 @@ session_start();
                     }
                     ?>
 
+                    <input type="hidden" name="id" value="<?= $wiki['id'] ?>">
+                    <input type="hidden" name="photo_src" value="<?= $wiki["wiki_photo_src"]; ?>" >
                     <!-- Submit Button -->
-                    <div class="flex flex-row justify-center pb-5">
-                        <button class="min-w-52 bg-blue-500 text-white px-4 py-2 mt-4 rounded-md hover:bg-blue-600 focus:outline-none focus:shadow-outline-blue active:bg-blue-800">
-                            Post
+                    <div class="flex flex-row justify-center">
+                        <button type="submit" class="min-w-52 bg-blue-500 text-white px-4 py-2 mt-4 rounded-md hover:bg-blue-600 focus:outline-none focus:shadow-outline-blue active:bg-blue-800">
+                            Update
                         </button>
                     </div>
                 </form>
@@ -176,6 +166,7 @@ session_start();
             allowClear: false,
         });
     </script>
+
 </body>
 
 </html>

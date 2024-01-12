@@ -1,3 +1,6 @@
+<?php
+session_start()
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -33,22 +36,14 @@
                     + Add Wiki
                 </a>
             </div>
-            <?php
-            if (isset($_SESSION['success_update'])) {
-            ?>
-                <p class="text-green-600 p-1 w-100 text-center"><?= $_SESSION['success_update'] ?></p>
-            <?php
-                unset($_SESSION['success_update']);
-            }
-            ?>
             <div class="flex flex-col w-full overflow-y-scroll max-h-[79vh]">
                 <!-- Success alert -->
                 <?php
-                if (isset($_SESSION['success_update'])) {
+                if (isset($_SESSION['success'])) {
                 ?>
-                    <p class="text-green-600 bg-green-200 p-1 w-100 text-center"><?= $_SESSION['success_update'] ?></p>
+                    <p class="text-green-600 p-1 text-center"><?= $_SESSION['success'] ?></p>
                 <?php
-                    unset($_SESSION['success_update']);
+                    unset($_SESSION['success']);
                 }
                 ?>
 
@@ -60,6 +55,7 @@
                             <th class="p-1 border-r border-gray-200">Author</th>
                             <th class="p-1 border-r border-gray-200">Title</th>
                             <th class="p-1 border-r border-gray-200">Status</th>
+                            <th class="p-1 border-r border-gray-200">Category</th>
                             <th class="p-1 border-r border-gray-200">Created</th>
                             <th class="p-1" colspan="2">
                                 Manage
@@ -80,8 +76,8 @@
 
                                 <td class="p-1 border-r border-white">
                                     <div class=" flex flex-row items-center gap-x-2">
-                                        <img class="w-7 h-7 rounded-full" src="<?= $_ENV['APP_URL'] . $wiki['author']['photo_src'] ?>" alt="Poster photo">
-                                        <p><?= $wiki['author']['name'] ?></p>
+                                        <img class="w-7 h-7 rounded-full" src="<?= $_ENV['APP_URL'] . $wiki['author_photo_src'] ?>" alt="Poster photo">
+                                        <p><?= $wiki['author_name'] ?></p>
                                     </div>
                                 </td>
 
@@ -92,20 +88,28 @@
                                 </td>
 
                                 <td class="p-1 border-r border-white text-center">
-                                    <div class="rounded-lg p-0.5 font-semibold <?php if($wiki['status'] === "pending") echo "bg-amber-100 text-amber-500"; else echo "bg-green-100 text-lime-500"; ?>">
+                                    <div class="rounded-lg p-0.5 font-semibold <?php if ($wiki['status'] === "pending") echo "bg-amber-100 text-amber-500";
+                                                                                else echo "bg-green-100 text-lime-500"; ?>">
                                         <?= $wiki['status'] ?>
                                     </div>
                                 </td>
 
                                 <td class="p-1 border-r border-white">
                                     <p class="font-semibold text-center">
-                                        <?= $wiki['created_at'] ?>
+                                        <?= $wiki['category_name'] ?>
+                                    </p>
+                                </td>
+
+                                <td class="p-1 border-r border-white">
+                                    <p class="font-semibold text-center">
+                                        <?= $wiki['wiki_created_at'] ?>
                                     </p>
                                 </td>
 
                                 <td class="text-right border-r border-white">
                                     <form class="text-center" action="<?= $_ENV['APP_URL'] . "/dashboard/wikis/delete" ?>" method="POST">
                                         <input type="hidden" name="id" id="id" value="<?= $wiki['id'] ?>">
+                                        <input type="hidden" name="photo_src" id="id" value="<?= $wiki['wiki_photo_src'] ?>">
                                         <button class="hover:bg-red-500 hover:text-white text-red-500 border border-red-500 rounded-md p-2" onclick="return confirmDelete()">
                                             Delete
                                         </button>
@@ -115,6 +119,7 @@
                                 <td class="text-left border-r border-white">
                                     <form class="text-center" action="<?= $_ENV['APP_URL'] . "/dashboard/wikis/edit" ?>" method="post">
                                         <input type="hidden" name="id" id="id" value="<?= $wiki['id'] ?>">
+                                        <input type="hidden" name="photo_src" id="id" value="<?= $wiki['wiki_photo_src'] ?>">
                                         <button type="submit" class="hover:bg-green-500 hover:text-white text-green-500 border border-green-500 rounded-md p-2">
                                             Update
                                         </button>
