@@ -40,8 +40,8 @@ create table wikis(
     `status` ENUM('pending', 'published') DEFAULT 'pending',
     `author_id` int,
     `category_id` int,
-    Foreign Key (`author_id`) REFERENCES users(`id`),
-    Foreign Key (`category_id`) REFERENCES categories(`id`),
+    Foreign Key (`author_id`) REFERENCES users(`id`) on delete set null on UPDATE CASCADE,
+    Foreign Key (`category_id`) REFERENCES categories(`id`) on delete set null on UPDATE CASCADE,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -50,8 +50,8 @@ create table wiki_tags(
     `id` int AUTO_INCREMENT PRIMARY key,
     `wiki_id` int,
     `tag_id` int,
-    Foreign Key (`wiki_id`) REFERENCES wikis(`id`),
-    Foreign Key (`tag_id`) REFERENCES tags(`id`),
+    Foreign Key (`wiki_id`) REFERENCES wikis(`id`) on delete CASCADE on UPDATE CASCADE,
+    Foreign Key (`tag_id`) REFERENCES tags(`id`) on delete CASCADE on UPDATE CASCADE,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
