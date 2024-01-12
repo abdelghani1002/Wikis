@@ -58,6 +58,7 @@ class Model
             return $result;
         } catch (\PDOException $e) {
             self::deconnect();
+            echo("Error within selecting from " . $table . "<br>" . $e->getMessage());
             return null;
         }
     }
@@ -75,7 +76,6 @@ class Model
 
             $stmt = self::$pdo->prepare($sql);
 
-
             // Bind parameters to the prepared statement by reference
             $i = 1;
             foreach ($data as $key => &$value) {
@@ -88,6 +88,7 @@ class Model
             return $lastInsertId;
         } catch (\PDOException $e) {
             self::deconnect();
+            echo("Error within inserting into " . $table . "<br>" . $e->getMessage());
             return false;
         }
     }
@@ -119,14 +120,13 @@ class Model
             }
             $stmt->bindParam($i, $id);
 
-
-
             // Execute the prepared statement
             $stmt->execute();
             self::deconnect();
             return true;
         } catch (\PDOException $e) {
             self::deconnect();
+            echo("Error within edittin into " . $table . "<br>" . $e->getMessage());
             return false;
         }
     }
@@ -145,7 +145,7 @@ class Model
             return true;
         } catch (\PDOException $e) {
             self::deconnect();
-            var_dump("error within deleting ! : " . $table);exit;
+            echo("error within deleting from " . $table . "<br>" . $e->getMessage());
             return false;
         }
     }
