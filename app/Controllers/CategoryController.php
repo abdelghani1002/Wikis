@@ -112,11 +112,6 @@ class CategoryController extends Controller
                 $rules['slogan'] = 'required|name';
             }
             
-            if ($slogan !== ""){
-                $data['slogan'] = $slogan;
-                $rules['slogan'] = 'required|name';
-            }
-            
             if (isset($_FILES['image']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE) {
                 $data['photo'] = $_FILES['photo'];
                 $rules['photo'] = 'required|file';
@@ -138,8 +133,8 @@ class CategoryController extends Controller
                 'slogan' => $slogan
             ];
 
-            if (isset($photo)) {
-                unlink('.' . $photo_src);
+            if (isset($photo) && $photo['error'] !== null) {
+                unlink(ltrim($photo_src, "/"));
                 $photoName = $photo['name'];
                 $photoTmpName = $photo['tmp_name'];
                 $photoType = strtolower(pathinfo($photoName, PATHINFO_EXTENSION));

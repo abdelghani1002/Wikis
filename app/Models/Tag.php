@@ -19,8 +19,6 @@ class Tag extends Model
 
     public static function select($where = null)
     {
-        if ($where === null)
-            return Model::selectRecords("tags", "*", null, "created_at desc");
         return Model::selectRecords('tags', '*', $where, "created_at desc");
     }
 
@@ -31,6 +29,6 @@ class Tag extends Model
 
     public static function delete($id)
     {
-        return Model::deleteRecord('tags', $id);
+        return Model::deleteRecord('tags', "id = $id");
     }
 }

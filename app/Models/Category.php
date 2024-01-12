@@ -37,7 +37,9 @@ class Category extends Model
     {
         $category = Model::selectRecords('categories', '*', "id = $id");
         // remove photos
-        unlink("." . $category['photo_src']);
-        return Model::deleteRecord('categories', $id);
+        if (file_exists(ltrim($category['photo_src'], "/"))) {
+            unlink(ltrim($category['photo_src'], "/"));
+        }
+        return Model::deleteRecord('categories', "id = $id");
     }
 }
