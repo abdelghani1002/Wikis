@@ -8,7 +8,29 @@ class Model
 {
     private static $pdo = null;
 
-    protected static function selectRecords(string $table, string $columns = "*", string $where = null, $order_by = null)
+    public static function query($q)
+    {
+        self::connect();
+        try {
+            // Prepare the SQL query
+            $stmt = self::$pdo->prepare($q);
+
+            // Execute the prepared statement with any bound parameters
+            $stmt->execute();
+
+            // Fetch the result set as an associative array
+            $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            self::deconnect();
+            if (count($result) === 1)
+                return $result[0];
+            return $result;
+        } catch (\PDOException $e) {
+            self::deconnect();
+            return null;
+        }
+    }
+
+    public static function selectRecords(string $table, string $columns = "*", string $where = null, $order_by = null)
     {
         self::connect();
         try {
@@ -50,7 +72,7 @@ class Model
 
         try {
             $sql = "INSERT INTO $table ($columns) VALUES ($placeholders)";
-            
+
             $stmt = self::$pdo->prepare($sql);
 
 
@@ -109,18 +131,13 @@ class Model
         }
     }
 
-    protected static function deleteRecord(string $table, int $id)
+    protected static function deleteRecord(string $table, string $where)
     {
         self::connect();
         try {
             // Use prepared statements to prevent SQL injection
-            $sql = "DELETE FROM $table WHERE id = ?";
+            $sql = "DELETE FROM $table WHERE $where";
             $stmt = self::$pdo->prepare($sql);
-
-
-
-            // Bind parameters to the prepared statement
-            $stmt->bindParam(1, $id);
 
             // Execute the prepared statement
             $stmt->execute();
@@ -128,6 +145,7 @@ class Model
             return true;
         } catch (\PDOException $e) {
             self::deconnect();
+            var_dump("error within deleting ! : " . $table);exit;
             return false;
         }
     }
