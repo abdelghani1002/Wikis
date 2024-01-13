@@ -1,16 +1,17 @@
 <?php
+
 namespace app\Controllers;
 
 use app\Models\Category;
 
 class AdminController extends Controller
 {
-    public function dashboard() {
-        $this->render('dashboard/index');
-    }
-    
-    public function categories() {
-        $categories = Category::select();
-        $this->render('dashboard/category/index', ['categories' => $categories]);
+    public function dashboard()
+    {
+        if (AuthController::user() && AuthController::user()['role'] === "admin") {
+            $this->render('dashboard/index');
+        } else {
+            header('location: ' . $_ENV['APP_URL']);
+        }
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use app\Controllers\AuthController;
 use app\Controllers\AdminController;
 use app\Controllers\CategoryController;
 use app\Controllers\HomeController;
@@ -14,6 +15,15 @@ $router->addRoute('/', HomeController::class, 'index');
 
 /********** User routes **********/
 // $router->addRoute('/profile');
+
+$router->addRoute('/login', AuthController::class, 'login_page');
+$router->addRoute('/signup', AuthController::class, 'signup_page');
+
+$router->addRoute('/signin', AuthController::class, 'signin');
+$router->addRoute('/register', AuthController::class, 'register');
+
+$router->addRoute('/logout', AuthController::class, 'logout');
+
 $router->addRoute('/wikis/show', WikiController::class, 'show');
 $router->addRoute('/wikis/create', WikiController::class, 'create');
 $router->addRoute('/wikis/store', WikiController::class, 'store');
