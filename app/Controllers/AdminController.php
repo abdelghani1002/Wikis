@@ -2,8 +2,6 @@
 
 namespace app\Controllers;
 
-use app\Models\Category;
-
 class AdminController extends Controller
 {
     public function dashboard()
