@@ -1,3 +1,8 @@
+<?php
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,7 +11,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href=<?= $_ENV['APP_URL'] . "/public/assets/dist/output.css" ?>>
     <link rel="stylesheet" href=<?= $_ENV['APP_URL'] . "/public/assets/input.css" ?>>
-    <link rel="stylesheet" href="<?= $_ENV['APP_URL'] . "/public/assets/font-awesome/css/font-awesome.min.css" ?>">    <title>Dashboard</title>
+    <link rel="stylesheet" href="<?= $_ENV['APP_URL'] . "/public/assets/font-awesome/css/font-awesome.min.css" ?>">
+    <title>Dashboard</title>
     <style>
         .categories {
             background-color: rgb(229 231 235 / var(--tw-bg-opacity));
@@ -64,7 +70,7 @@
                             <tr class="odd:bg-gray-200 even:bg-gray-300">
                                 <td class="p-1 text-center border-r border-white w-10">
                                     <a href="#" class="p-1 text-blue-600">
-                                    <i class="hover:scale-125 fa fa-eye" aria-hidden="true"></i>
+                                        <i class="hover:scale-125 fa fa-eye" aria-hidden="true"></i>
                                     </a>
                                 </td>
 
@@ -79,13 +85,13 @@
                                         <?= $category['slogan'] ?>
                                     </p>
                                 </td>
-                                
+
                                 <td class="p-1 border-r border-white">
                                     <div class="w-20 m-auto">
                                         <img class="rounded-md" src="<?= $_ENV['APP_URL'] . $category["photo_src"] ?>" alt="category photo">
                                     </div>
                                 </td>
-                                
+
                                 <td class="p-1 border-r border-white">
                                     <p class="font-semibold text-center">
                                         <?= $category['created_at'] ?>
