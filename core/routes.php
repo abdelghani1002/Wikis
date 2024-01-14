@@ -13,6 +13,8 @@ $router = new Router();
 
 /* Home */
 $router->addRoute('/', HomeController::class, 'index');
+$router->addRoute('/search', HomeController::class, 'search');
+$router->addRoute('/wikis', HomeController::class, 'wikis');
 
 /********** User routes **********/
 $router->addRoute('/profile', UserController::class, 'profile');
