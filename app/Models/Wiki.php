@@ -47,9 +47,9 @@ class Wiki extends Model
         }
     }
 
-    public static function select($where = null)
+    public static function select($where = null, $limit = 100)
     {
-        $q =    "select w.id, w.title, w.content, w.photo_src as wiki_photo_src,
+        $q =    "select w.id, w.title, w.content, author_id, w.photo_src as wiki_photo_src,
                     w.status, w.created_at as wiki_created_at, u.name as author_name,
                     u.photo_src as author_photo_src, c.name as category_name, c.photo_src as category_photo_src
                 from wikis w
@@ -61,10 +61,32 @@ class Wiki extends Model
         if ($where !== null) {
             $q .= " WHERE $where";
         }
-        $q .= " order by w.created_at desc";
+
+        $q .= " order by w.created_at desc LIMIT $limit";
 
         $wikis = parent::query($q);
+        if (isset($wikis['id']))
+            $wikis['tags'] = self::getTags($wikis['id']);
+        else{
+            foreach($wikis as &$wiki){
+                $wiki['tags'] = self::getTags($wiki['id']);
+            }
+        }
         return $wikis;
+    }
+
+    public static function getTags($wiki_id)
+    {
+        $tags = parent::query("
+            SELECT  id, name
+                FROM tags
+            WHERE id in(
+                SELECT  tag_id
+                FROM wiki_tags
+                WHERE wiki_id = $wiki_id
+            );
+        ");
+        return $tags;
     }
 
     public static function update($data, $tags, $id)

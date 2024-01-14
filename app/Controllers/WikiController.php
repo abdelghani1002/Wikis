@@ -15,18 +15,40 @@ class WikiController extends Controller
     public function index()
     {
         $wikis = Wiki::select("status = 'published'");
+        if (isset($wikis['id'])) $wikis = [$wikis];
         $archived_wikis = Wiki::select("status = 'archived'");
+        if (isset($archived_wikis['id'])) $archived_wikis = [$archived_wikis];
         $this->render('dashboard/wiki/index', [
+
             'wikis' => $wikis,
             'archived_wikis' => $archived_wikis,
         ]);
     }
 
+    public function show()
+    {
+        if (isset($_GET['id'])) {
+            $id = $_GET['id'];
+            $wiki = Wiki::select("w.id = $id", 1);
+            $this->render('wiki/show', ['wiki' => $wiki]);
+            exit;
+        }
+        header("location:" . $_SERVER['HTTP_REFERER']);
+    }
+
     public function create()
     {
-        $categories = Category::select();
-        $tags = Tag::select();
-        $this->render('dashboard/wiki/create', ['categories' => $categories, 'tags' => $tags]);
+        if (AuthController::user()) {
+            $categories = Category::select();
+            if (isset($categories['id'])) $categories = [$categories];
+            $tags = Tag::select();
+            if (isset($tags['id'])) $tags = [$tags];
+            if (AuthController::user()['role'] === "admin") {
+                $this->render('dashboard/wiki/create', ['categories' => $categories, 'tags' => $tags]);
+                exit;
+            }
+            $this->render('wiki/create', ['categories' => $categories, 'tags' => $tags]);
+        }
     }
 
     public function store()
@@ -34,7 +56,7 @@ class WikiController extends Controller
         if (isset($_POST)) {
             $title = $_POST['title'];
             $content = $_POST['content'];
-            $author_id = 1; // Auth:user()['id'];
+            $author_id = AuthController::user()['id'];
             $category_id = $_POST['category_id'];
             $tags = [];
             if (isset($_POST['tags'])) {
@@ -71,6 +93,7 @@ class WikiController extends Controller
             }
             // store photo
             $isPhotoSaved = false;
+            $photoDestination = "";
             if (!empty($photo) && $photo['error'] !== null) {
                 $photoName = $photo['name'];
                 $photoTmpName = $photo['tmp_name'];
@@ -83,7 +106,6 @@ class WikiController extends Controller
                 $photoDestination = $photoUploadFolder . $newPhotoName;
                 $isPhotoSaved = move_uploaded_file($photoTmpName,  $photoDestination);
             }
-            $photoDestination = "";
             if ($isPhotoSaved)
                 $photoDestination = "/" . $photoDestination;
 
@@ -105,11 +127,13 @@ class WikiController extends Controller
 
     public function edit()
     {
-        if (isset($_POST['id'])) {
+        if (isset($_POST['id']) && AuthController::user()) {
             $id = $_POST['id'];
             $wiki = Wiki::select("w.id = $id");
             $tags = Tag::select();
+            if (isset($tags['id'])) $tags = [$tags];
             $categories = Category::select();
+            if (isset($categories['id'])) $categories = [$categories];
             $wiki_tags_ids = Model::selectRecords("wiki_tags", "tag_id", "wiki_id = $id");
 
             // Remove assosiative array
@@ -119,16 +143,18 @@ class WikiController extends Controller
             } else {
                 $wiki_tags_ids = array_column($wiki_tags_ids, 'tag_id');
             }
-            // echo "<pre>";
-            // var_dump($wiki_tags_ids);
-            // echo "</pre>";exit;
 
-            $this->render("dashboard/wiki/edit", [
+            $data = [
                 'wiki' => $wiki,
                 'tags' => $tags,
                 'categories' => $categories,
                 'wiki_tags_ids' => $wiki_tags_ids,
-            ]);
+            ];
+            if (AuthController::user()["role"] === "admin") {
+                $this->render("dashboard/wiki/edit", $data);
+                exit;
+            }
+            $this->render("wiki/edit", $data);
         }
     }
 
@@ -189,30 +215,25 @@ class WikiController extends Controller
                 $photoDestination = $photoUploadFolder . $newPhotoName;
                 move_uploaded_file($photoTmpName,  $photoDestination);
                 $photoDestination = "/" . $photoDestination;
+                $data["photo_src"] = $photoDestination;
             }
 
             unset($data['photo']);
-            $data["photo_src"] = $photoDestination;
             $data["category_id"] = $category_id;
 
             if (Wiki::update($data, $tags, $id)) {
                 session_start();
                 $_SESSION['success']  = "Wiki updated successfully.";
-                // if (Auth::user()['role'] == admin) {
-                header('location: ' . $_ENV['APP_URL'] . '/dashboard/wikis');
-                // exit;
-                // }
-                // header('location: ' . $_ENV['APP_URL'] . '/wikis');                
+                if (AuthController::user()['role'] === "admin") {
+                    header('location: ' . $_ENV['APP_URL'] . '/dashboard/wikis');
+                    exit;
+                }
+                header('location: ' . $_ENV['APP_URL'] . '/profile');
                 return;
             }
             session_start();
             $_SESSION['errors'] = [0 => "Error withing updating the wiki !!"];
-            // if (Auth::user()['role'] == admin) {
             header('location: ' . $_SERVER['HTTP_REFERER']);
-            // exit;
-            // }
-            // header('location: ' . $_ENV['APP_URL'] . '/wikis');
-            return;
         }
     }
 
@@ -224,17 +245,18 @@ class WikiController extends Controller
             session_start();
             $_SESSION['success']  = "Wiki Removed successfully.";
             if (AuthController::user()['role'] == "admin") {
-                header("Location:" . $_SERVER['HTTP_REFERER'] . "/dashboard/wikis");
+                header("Location:" . $_ENV['APP_URL'] . "/dashboard/wikis");
                 exit;
             }
             header('location: ' . $_ENV['APP_URL'] . '/profile');
         }
     }
 
-    public function archive(){
+    public function archive()
+    {
         if (isset($_POST['id']) && AuthController::user()['role'] === "admin") {
             $id = $_POST['id'];
-            if(Wiki::archive($id)){
+            if (Wiki::archive($id)) {
                 session_start();
                 $_SESSION['success'] = "Wiki archived successfully.";
                 header('location: ' . $_ENV['APP_URL'] . "/dashboard/wikis");
