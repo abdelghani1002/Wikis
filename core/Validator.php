@@ -94,8 +94,8 @@ class Validator
         $text = $this->data[$field];
         $textLength = strlen($text);
 
-        if ($textLength < 200 || $textLength > 2000) {
-            $this->addError($field, 'The ' . $field . ' must be between 200 and 2000 characters long.');
+        if ($textLength < 200 || $textLength > 65000) {
+            $this->addError($field, 'The ' . $field . ' must be between 200 and 65000 characters long.');
         }
     }
 
