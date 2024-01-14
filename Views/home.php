@@ -105,7 +105,7 @@ if (session_status() == PHP_SESSION_NONE) {
             <div class="relative max-w-screen-xl mx-auto px-8 z-10 text-center text-white">
                 <h2 class="text-4xl md:text-5xl font-extrabold leading-tight mb-6">Explore More in Our Wiki</h2>
                 <p class="text-lg md:text-xl mb-8">Discover a wide array of articles on various topics in our wiki section. View all articles to expand your knowledge!</p>
-                <a href="articles" type="button" class="bg-blue-100 text-blue-800 hover:bg-blue-800 hover:text-white text-base font-semibold px-8 py-2.5 rounded-full transition duration-300 ease-in-out shadow-lg hover:shadow-xl">view all wikis</a>
+                <a href="<?= $_ENV['APP_URL'] . "/search" ?>" type="button" class="bg-blue-100 text-blue-800 hover:bg-blue-800 hover:text-white text-base font-semibold px-8 py-2.5 rounded-full transition duration-300 ease-in-out shadow-lg hover:shadow-xl">view all wikis</a>
             </div>
         </div>
     </section>
