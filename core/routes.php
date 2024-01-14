@@ -22,9 +22,9 @@ $router->addRoute('/signup', AuthController::class, 'signup_page');
 
 $router->addRoute('/signin', AuthController::class, 'signin');
 $router->addRoute('/register', AuthController::class, 'register');
-
 $router->addRoute('/logout', AuthController::class, 'logout');
 
+/* Own Wikis management */
 $router->addRoute('/wikis/show', WikiController::class, 'show');
 $router->addRoute('/wikis/create', WikiController::class, 'create');
 $router->addRoute('/wikis/store', WikiController::class, 'store');
@@ -45,6 +45,7 @@ $router->addRoute('/dashboard/categories/delete', CategoryController::class, 'de
 
 // Wiki
 $router->addRoute('/dashboard/wikis', WikiController::class, 'index');
+$router->addRoute('/dashboard/wikis/show', WikiController::class, 'show');
 $router->addRoute('/dashboard/wikis/edit', WikiController::class, 'edit');
 $router->addRoute('/dashboard/wikis/update', WikiController::class, 'update');
 $router->addRoute('/dashboard/wikis/delete', WikiController::class, 'delete');
