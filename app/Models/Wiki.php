@@ -49,7 +49,7 @@ class Wiki extends Model
 
     public static function select($where = null, $limit = 100)
     {
-        $q =    "select w.id, w.title, w.content, author_id, w.photo_src as wiki_photo_src,
+        $q =    "select w.id, w.title, w.content, author_id, w.category_id, w.photo_src as wiki_photo_src,
                     w.status, w.created_at as wiki_created_at, u.name as author_name,
                     u.photo_src as author_photo_src, c.name as category_name, c.photo_src as category_photo_src
                 from wikis w
