@@ -71,12 +71,7 @@ class AuthController extends Controller
                 $errors['data'] = "It's look like you're not yet a member! Click on the bottom link to signup.";
             } else if (password_verify($password, $userdata['password'])) {
 
-                $_SESSION['user'] = [
-                    'username' => $userdata['name'],
-                    'email' => $email,
-                    'role' => $userdata['role'],
-                    'id' => $userdata['id'],
-                ];
+                $_SESSION['user'] = $userdata;
                 if ($userdata['role'] === "admin") {
                     header("location: " . $_ENV['APP_URL'] . "/dashboard");
                     exit;
