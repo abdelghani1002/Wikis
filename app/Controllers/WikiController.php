@@ -14,8 +14,12 @@ class WikiController extends Controller
 {
     public function index()
     {
-        $wikis = Wiki::select();
-        $this->render('dashboard/wiki/index', ['wikis' => $wikis]);
+        $wikis = Wiki::select("status = 'published'");
+        $archived_wikis = Wiki::select("status = 'archived'");
+        $this->render('dashboard/wiki/index', [
+            'wikis' => $wikis,
+            'archived_wikis' => $archived_wikis,
+        ]);
     }
 
     public function create()
@@ -155,7 +159,7 @@ class WikiController extends Controller
                 $data['photo'] = $photo;
                 $rules['photo'] = "file";
             }
-            
+
 
             $validator = new Validator($data);
             $validator->validate($rules);
@@ -219,12 +223,24 @@ class WikiController extends Controller
         if (isset($_POST['id']) && Wiki::delete($_POST['id'])) {
             session_start();
             $_SESSION['success']  = "Wiki Removed successfully.";
-            // if (Auth::user()['role'] == admin) {
-            header("Location:" . $_SERVER['HTTP_REFERER']);
-            // exit;
-            // }
-            // header('location: ' . $_ENV['APP_URL'] . '/wikis');                
-            return;
+            if (AuthController::user()['role'] == "admin") {
+                header("Location:" . $_SERVER['HTTP_REFERER'] . "/dashboard/wikis");
+                exit;
+            }
+            header('location: ' . $_ENV['APP_URL'] . '/profile');
         }
+    }
+
+    public function archive(){
+        if (isset($_POST['id']) && AuthController::user()['role'] === "admin") {
+            $id = $_POST['id'];
+            if(Wiki::archive($id)){
+                session_start();
+                $_SESSION['success'] = "Wiki archived successfully.";
+                header('location: ' . $_ENV['APP_URL'] . "/dashboard/wikis");
+                exit;
+            }
+        }
+        echo "error withing archive wiki !";
     }
 }

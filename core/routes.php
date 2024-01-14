@@ -5,6 +5,7 @@ use app\Controllers\AdminController;
 use app\Controllers\CategoryController;
 use app\Controllers\HomeController;
 use app\Controllers\TagController;
+use app\Controllers\UserController;
 use app\Controllers\WikiController;
 use core\Router;
 
@@ -14,7 +15,7 @@ $router = new Router();
 $router->addRoute('/', HomeController::class, 'index');
 
 /********** User routes **********/
-// $router->addRoute('/profile');
+$router->addRoute('/profile', UserController::class, 'profile');
 
 $router->addRoute('/login', AuthController::class, 'login_page');
 $router->addRoute('/signup', AuthController::class, 'signup_page');
@@ -47,6 +48,7 @@ $router->addRoute('/dashboard/wikis', WikiController::class, 'index');
 $router->addRoute('/dashboard/wikis/edit', WikiController::class, 'edit');
 $router->addRoute('/dashboard/wikis/update', WikiController::class, 'update');
 $router->addRoute('/dashboard/wikis/delete', WikiController::class, 'delete');
+$router->addRoute('/dashboard/wikis/archive', WikiController::class, 'archive');
 
 // Tag
 $router->addRoute('/dashboard/tags', TagController::class, 'index');

@@ -85,4 +85,13 @@ class Wiki extends Model
             &&
             parent::deleteRecord('wikis', "id = $id");
     }
+
+    public static function archive($id)
+    {
+        $res1 = parent::updateRecord('wikis', ['status' => "archived"], $id);
+        if ($res1) {
+            return true;
+        }
+        return false;
+    }
 }
