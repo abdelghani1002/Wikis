@@ -165,9 +165,7 @@ if (session_status() == PHP_SESSION_NONE) {
                 </form>
             </div>
         </div>
-
     </div>
-
 
     <script>
         $('#multiple-select-clear-field').select2({

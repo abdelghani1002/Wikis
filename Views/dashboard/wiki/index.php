@@ -199,7 +199,7 @@ if (session_status() == PHP_SESSION_NONE) {
 
                                 <td class="p-1 border-r border-white text-center">
                                     <div>
-                                        <span class="rounded-lg px-2 py-1 font-semibold bg-amber-100 text-yellow-700">
+                                        <span class="rounded-lg px-2 py-1 font-semibold bg-gray-100 text-yellow-800">
                                             Archived
                                         </span>
                                     </div>

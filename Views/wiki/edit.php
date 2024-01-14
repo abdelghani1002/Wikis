@@ -10,7 +10,7 @@ if (session_status() == PHP_SESSION_NONE) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href=<?= $_ENV['APP_URL'] . "/public/assets/dist/output.css" ?>>
-
+    <title>Wikis-Post</title>
     <!-- select2 -->
     <!-- Styles -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
@@ -23,15 +23,10 @@ if (session_status() == PHP_SESSION_NONE) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
 
-    <title>Dashboard</title>
-    <!-- Tiny -->
+    <title>Wiki</title>
+    <!-- Tiny CDN -->
     <script src="https://cdn.tiny.cloud/1/qwokz1nmmty2escna2o9lclbv8en7rr1g4j0a0kz0h74kjso/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 
-    <style>
-        .wikis {
-            background-color: rgb(229 231 235 / var(--tw-bg-opacity));
-        }
-    </style>
 </head>
 
 <body class="h-screen">
@@ -41,18 +36,29 @@ if (session_status() == PHP_SESSION_NONE) {
     ?>
 
     <div class="w-full flex flex-row">
-
-        <?php
-        require "Views/includes/dashboard/aside.php";
-        ?>
-
         <div class="relative w-full mx-auto bg-white rounded-md shadow-md">
             <div class="absolute top-2 left-0">
-                <a href="<?= $_SERVER['HTTP_REFERER'] ?>" class="bg-gray-300 cursor-pointer rounded-md m-2 p-1 text-md text-gray-600">
+                <a href="<?= $_ENV['APP_URL'] . "/profile" ?>" class="bg-gray-300 cursor-pointer rounded-md m-2 p-1 text-md text-gray-600">
                     < Back </a>
             </div>
-            <div class="w-full flex flex-col items-center overflow-y-scroll h-[88dvh]">
+            <div class="w-full flex flex-col items-center">
                 <h1 class="text-2xl font-semibold mb-6">Edit Wiki</h1>
+                <?php
+                if (isset($_SESSION['success'])) {
+                ?>
+                    <p class="text-green-600 p-1"><?= $_SESSION['success'] ?></p>
+                    <?php
+                    unset($_SESSION['success']);
+                }
+                if (isset($_SESSION['errors'])) {
+                    foreach ($_SESSION['errors'] as $error) {
+                    ?>
+                        <p class="text-red-600 text-sm m-0"><?= $error ?></p>
+                <?php
+                    }
+                    unset($_SESSION['errors']);
+                }
+                ?>
 
                 <form class="w-2/3 p-1" action="<?= $_ENV['APP_URL'] . "/wikis/update" ?>" method="post" enctype="multipart/form-data">
                     <!-- Wiki Category -->
@@ -145,7 +151,7 @@ if (session_status() == PHP_SESSION_NONE) {
                     ?>
 
                     <input type="hidden" name="id" value="<?= $wiki['id'] ?>">
-                    <input type="hidden" name="photo_src" value="<?= $wiki["wiki_photo_src"]; ?>" >
+                    <input type="hidden" name="photo_src" value="<?= $wiki["wiki_photo_src"]; ?>">
                     <!-- Submit Button -->
                     <div class="flex flex-row justify-center">
                         <button type="submit" class="min-w-52 bg-blue-500 text-white px-4 py-2 mt-4 rounded-md hover:bg-blue-600 focus:outline-none focus:shadow-outline-blue active:bg-blue-800">
@@ -168,7 +174,6 @@ if (session_status() == PHP_SESSION_NONE) {
             allowClear: false,
         });
     </script>
-
 </body>
 
 </html>
