@@ -12,6 +12,7 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = Category::select();
+        if (isset($categories['id'])) $categories = [$categories];
         $this->render('dashboard/category/index', ['categories' => $categories]);
     }
 

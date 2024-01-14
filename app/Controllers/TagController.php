@@ -12,6 +12,7 @@ class TagController extends Controller
     public function index()
     {
         $tags = Tag::select();
+        if (isset($tags['id'])) $tags = [$tags];
         $this->render('dashboard/tag/index', ['tags' => $tags]);
     }
 
