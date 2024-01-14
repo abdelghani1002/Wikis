@@ -18,7 +18,7 @@ class Router
     {
         if (array_key_exists($uri, $this->routes)) {
             if (str_contains($uri, "dashboard")) {
-                if (!AuthController::user() || !AuthController::user()['role'] === "admin") {
+                if (AuthController::user()['role'] !== "admin") {
                     header("location: " . $_ENV['APP_URL']);
                     exit;
                 }
