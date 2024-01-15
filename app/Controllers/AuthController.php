@@ -125,11 +125,7 @@ class AuthController extends Controller
             $user = new User($username, $email, $password);
             $id = $user->save();
             if ($id) {
-                $_SESSION['user'] = [
-                    'username' => $username,
-                    'email' => $email,
-                    'role' => "author"
-                ];
+                $_SESSION['user'] = User::select("id = $id");
                 header('location: ' . $_ENV['APP_URL'] . "/profile?id=$id");
                 exit;
             }
