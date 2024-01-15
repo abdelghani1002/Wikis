@@ -97,7 +97,7 @@ class CategoryController extends Controller
             $photo_src = $_POST['photo_src'];
             $name = $_POST['name'];
             $slogan = $_POST['slogan'];
-            $photo = $_FILES['photo'];
+            if ($_FILES['photo']) $photo = $_FILES['photo'];
 
             // Validation
             $data = [
@@ -134,7 +134,7 @@ class CategoryController extends Controller
                 'slogan' => $slogan
             ];
 
-            if (isset($photo) && $photo['error'] !== null) {
+            if (isset($photo) && $photo['name'] !== "") {
                 unlink(ltrim($photo_src, "/"));
                 $photoName = $photo['name'];
                 $photoTmpName = $photo['tmp_name'];
