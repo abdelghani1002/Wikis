@@ -10,7 +10,7 @@ if (session_status() == PHP_SESSION_NONE) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href=<?= $_ENV['APP_URL'] . "/public/assets/dist/output.css" ?>>
-    <title>Dashboard</title>
+    <title>Create</title>
     <!-- select2 -->
     <!-- Styles -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
@@ -118,6 +118,7 @@ if (session_status() == PHP_SESSION_NONE) {
                     ?>
                     <!-- Wiki Tags -->
                     <div class="mt-4">
+                    <label for="tags[]" class="block text-gray-600 text-sm font-medium mb-2">Tags</label>
                         <select name="tags[]" class="form-select" id="multiple-select-clear-field" data-placeholder="Choose anything" multiple>
                             <?php
                             foreach ($tags as $tag) {
